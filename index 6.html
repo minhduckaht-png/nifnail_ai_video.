@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#17131b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>NIFNAIL AI VIDEO</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<style>
+:root{--bg:#100e13;--panel:#1d1922;--line:#39313f;--pink:#f1b8d2;--gold:#d9bd91;--txt:#fff8fc;--muted:#b8acb9}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#342333 0,#100e13 48%);color:var(--txt);font:15px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;padding:env(safe-area-inset-top) 15px calc(24px + env(safe-area-inset-bottom))}
+main{max-width:680px;margin:auto}.brand{text-align:center;padding:30px 10px 20px}.brand .logo{font-size:12px;letter-spacing:5px;color:var(--gold)}h1{font-family:Georgia,serif;font-weight:500;letter-spacing:2px;font-size:29px;margin:9px 0 5px}.sub{color:var(--muted);font-size:13px}
+.card{background:rgba(29,25,34,.94);border:1px solid var(--line);border-radius:20px;padding:17px;margin:13px 0;box-shadow:0 12px 35px #0003}
+h2{font-size:15px;margin:0 0 12px;letter-spacing:.4px}.hint{font-size:12px;line-height:1.55;color:var(--muted)}
+.pick{display:flex;align-items:center;justify-content:center;gap:10px;min-height:100px;border:1.5px dashed #a77e9c;border-radius:16px;background:#291f2b;text-align:center;padding:16px;cursor:pointer}
+.pick strong{display:block;color:var(--pink);font-size:15px;margin-bottom:5px}.pick input{display:none}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.pill{background:#2a2330;border:1px solid var(--line);padding:8px 11px;border-radius:30px;color:#e8dce8;font-size:12px}
+button{border:0;border-radius:14px;padding:15px 16px;font-weight:700;font-size:14px;cursor:pointer}
+.primary{width:100%;background:linear-gradient(110deg,#f1bfd7,#d6b88c);color:#281923;margin-top:12px}
+.secondary{background:#342938;color:#f6d9e8;border:1px solid #5a4358}
+button:disabled{opacity:.45;cursor:not-allowed}
+#items{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}
+.thumb{position:relative;aspect-ratio:1;border-radius:11px;overflow:hidden;background:#302a33;border:1px solid #514454}
+.thumb img,.thumb video{width:100%;height:100%;object-fit:cover}
+.thumb span{position:absolute;bottom:4px;left:4px;background:#000a;padding:3px 5px;border-radius:6px;font-size:10px}
+#preview{width:100%;max-height:55vh;aspect-ratio:9/16;object-fit:contain;background:#09080b;border-radius:15px;display:none}
+#status{color:var(--pink);font-size:13px;margin-top:10px;min-height:20px}
+progress{width:100%;height:8px;accent-color:#e6b6d0;display:none}
+footer{text-align:center;color:#887e8b;font-size:11px;padding:18px 5px}
+.smallbtn{padding:9px 11px;font-size:12px}
+.notice{border-left:3px solid var(--gold);padding:9px 11px;background:#29232b;color:#c9bdca;font-size:12px;line-height:1.5;border-radius:0 9px 9px 0}
+#scenes{display:grid;gap:9px;margin-top:12px}.scene{display:grid;grid-template-columns:76px 1fr;gap:10px;align-items:center;padding:9px;background:#28222d;border:1px solid #463849;border-radius:12px}.scene img,.scene video{width:76px;height:90px;object-fit:cover;border-radius:8px;background:#111}.scene select{width:100%;margin-top:6px;background:#18141c;color:#fff;border:1px solid #5a4358;border-radius:8px;padding:9px;font-size:12px}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<header class="brand"><div class="logo">NAIL BEAUTY STUDIO</div><h1>NIFNAIL AI VIDEO</h1><div class="sub">Your daily nail moments, beautifully edited</div></header>
+
+<section class="card">
+ <h2>01 · CHỌN TƯ LIỆU HÔM NAY</h2>
+ <label class="pick" for="mediaInput"><div><strong>＋ Chọn ảnh & video trong album</strong><span class="hint">Anh tự chọn nhiều ảnh/video nguồn cho clip hôm nay</span></div><input id="mediaInput" type="file" accept="image/*,video/*" multiple></label>
+ <div id="items"></div><div class="row" style="margin-top:12px"><span class="pill" id="count">Chưa có tư liệu</span><span class="pill">Dọc 9:16</span></div>
+</section>
+
+<section class="card">
+ <h2>02 · TẢI VIDEO MẪU CHO LẦN NÀY</h2>
+ <label class="pick" for="templateInput"><div><strong>＋ Chọn 1 video mẫu</strong><span class="hint">Mỗi lần dựng anh có thể chọn một mẫu khác nhau</span></div><input id="templateInput" type="file" accept="video/*"></label>
+ <div class="row" style="margin-top:10px"><span class="pill" id="templateInfo">Chưa có video mẫu</span></div>
+ <p class="hint">App sẽ đọc thời lượng và dò các điểm thay đổi cảnh trong video mẫu. Mẫu chỉ dùng cho lần dựng hiện tại, không cần lưu cố định.</p>
+ <button id="analyzeBtn" class="secondary" style="width:100%;margin-top:8px" disabled>Phân tích video mẫu</button>
+ <div id="analysisStatus" class="hint" style="margin-top:8px"></div>
+</section>
+
+<section class="card">
+ <h2>03 · KIỂM TRA CÁC CẢNH</h2>
+ <div id="sceneSummary" class="hint">Chọn tư liệu nguồn và video mẫu để tạo danh sách cảnh.</div>
+ <div id="scenes"></div>
+ <p class="hint">App tự phân bổ tư liệu theo thứ tự. Anh có thể đổi tư liệu cho từng cảnh trước khi dựng.</p>
+</section>
+
+<section class="card">
+ <h2>04 · DỰNG VIDEO THEO MẪU</h2>
+ <div class="row"><span class="pill">✨ Luxury nhẹ nhàng</span><span class="pill">✦ Chuyển cảnh mềm</span><span class="pill">🎵 Nhạc instrumental tự tạo</span></div>
+ <p class="hint" style="margin-bottom:0">Nếu có video mẫu, thời lượng xuất sẽ theo mẫu. Nếu chưa có mẫu, app dùng thời lượng 30 giây.</p>
+ <button id="makeBtn" class="primary" disabled>✦ TỰ DỰNG VIDEO</button>
+ <div id="status"></div><progress id="progress" max="100" value="0"></progress>
+</section>
+
+<section class="card">
+ <h2>05 · VIDEO HOÀN THÀNH</h2>
+ <video id="preview" controls playsinline></video>
+ <div class="row" style="margin-top:12px"><button id="saveBtn" class="secondary" style="display:none;flex:1">Lưu / Chia sẻ video</button><button id="againBtn" class="secondary smallbtn" style="display:none">Dựng lại</button></div>
+ <p class="hint" id="formatHint">Sau khi dựng xong, anh có thể lưu video vào Ảnh hoặc chia sẻ sang ứng dụng khác.</p>
+</section>
+<section class="card"><div class="notice"><b>Lưu ý:</b> Video mẫu và tư liệu được xử lý trong trình duyệt trên iPhone, không tự tải lên máy chủ. Việc phân tích cảnh là dò thay đổi hình ảnh theo mẫu, không phải AI hiểu nội dung như con người. Hiệu ứng độc quyền của ứng dụng dựng video khác chỉ có thể mô phỏng ở mức trình duyệt hỗ trợ. iPhone/Safari quyết định định dạng xuất có sẵn.</div></section>
+<footer>NIFNAIL STUDIO · MADE WITH LOVE</footer>
+</main>
+
+<script>
+const $=id=>document.getElementById(id);
+const input=$('mediaInput'),templateInput=$('templateInput'),itemsEl=$('items'),countEl=$('count');
+const makeBtn=$('makeBtn'),analyzeBtn=$('analyzeBtn'),statusEl=$('status'),progressEl=$('progress');
+const preview=$('preview'),saveBtn=$('saveBtn'),againBtn=$('againBtn');
+let files=[],mediaUrls=[],templateFile=null,templateUrl=null,templateVideo=null,duration=30,sceneTimes=[],sceneSources=[],finalBlob=null,finalUrl=null,audioCtx=null;
+const fmt=s=>{s=Math.max(0,s||0);return Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0');};
+function setStatus(t,p){statusEl.textContent=t;if(p!==undefined)progressEl.value=p;}
+function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+function revokeMedia(){mediaUrls.forEach(URL.revokeObjectURL);mediaUrls=[];}
+function makeThumb(file,url,index){const d=document.createElement('div');d.className='thumb';const el=document.createElement(file.type.startsWith('video/')?'video':'img');el.src=url;if(el.tagName==='VIDEO'){el.muted=true;el.playsInline=true;el.preload='metadata';}d.appendChild(el);const s=document.createElement('span');s.textContent=(file.type.startsWith('video/')?'VIDEO':'ẢNH')+' '+(index+1);d.appendChild(s);return d;}
+input.addEventListener('change',()=>{
+ revokeMedia();files=[...input.files].filter(f=>f.type.startsWith('image/')||f.type.startsWith('video/'));
+ files.sort((a,b)=>a.lastModified-b.lastModified);itemsEl.innerHTML='';
+ files.forEach((f,i)=>{const u=URL.createObjectURL(f);mediaUrls.push(u);itemsEl.appendChild(makeThumb(f,u,i));});
+ countEl.textContent=files.length?files.length+' tư liệu đã chọn':'Chưa có tư liệu';
+ rebuildScenes();updateReady();$('status').textContent='';preview.style.display='none';saveBtn.style.display='none';
+});
+templateInput.addEventListener('change',()=>{
+ if(templateUrl)URL.revokeObjectURL(templateUrl);templateFile=templateInput.files[0]||null;templateVideo=null;sceneTimes=[];sceneSources=[];
+ if(!templateFile){$('templateInfo').textContent='Chưa có video mẫu';}
+ else{$('templateInfo').textContent=templateFile.name+' · đang đọc thời lượng';templateUrl=URL.createObjectURL(templateFile);
+  const v=document.createElement('video');v.preload='metadata';v.muted=true;v.playsInline=true;v.src=templateUrl;
+  v.onloadedmetadata=()=>{duration=Number.isFinite(v.duration)?v.duration:30;$('templateInfo').textContent='Video mẫu · '+fmt(duration)+' · '+(v.videoWidth||'?')+'×'+(v.videoHeight||'?');templateVideo=v;analyzeBtn.disabled=false;};
+  v.onerror=()=>{$('templateInfo').textContent='Không đọc được video mẫu';analyzeBtn.disabled=true;};
+ }
+ $('analysisStatus').textContent='';$('scenes').innerHTML='';$('sceneSummary').textContent='Bấm “Phân tích video mẫu” để dò các cảnh.';updateReady();
+});
+function updateReady(){makeBtn.disabled=!files.length;}
+function loadImage(file){return new Promise((resolve,reject)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>resolve({el:im,url:u});im.onerror=()=>{URL.revokeObjectURL(u);reject(new Error('Không đọc được ảnh'));};im.src=u;});}
+function loadVideo(file){return new Promise((resolve,reject)=>{const u=URL.createObjectURL(file),v=document.createElement('video');v.src=u;v.muted=true;v.playsInline=true;v.preload='metadata';v.onloadedmetadata=()=>resolve({el:v,url:u});v.onerror=()=>{URL.revokeObjectURL(u);reject(new Error('Không đọc được video'));};});}
+function seekVideo(v,t){return new Promise(resolve=>{if(Math.abs(v.currentTime-t)<.04){resolve();return;}const done=()=>{v.removeEventListener('seeked',done);resolve();};v.addEventListener('seeked',done,{once:true});try{v.currentTime=Math.min(Math.max(0,t),Math.max(0,v.duration-.05));}catch(e){resolve();}setTimeout(resolve,1200);});}
+async function analyzeTemplate(){
+ if(!templateFile||!templateVideo)return;
+ analyzeBtn.disabled=true;$('analysisStatus').textContent='Đang phân tích các điểm chuyển cảnh…';
+ try{
+  const v=templateVideo;const dur=duration;const sampleStep=Math.max(.45,Math.min(1.1,dur/45));const c=document.createElement('canvas');c.width=48;c.height=48;const x=c.getContext('2d',{willReadFrequently:true});
+  let prev=null,cuts=[0];const samples=Math.min(90,Math.max(2,Math.floor(dur/sampleStep)));
+  for(let i=0;i<=samples;i++){
+   const t=Math.min(Math.max(0,dur-.08),i*dur/(samples+1));await seekVideo(v,t);
+   try{x.drawImage(v,0,0,48,48);const dat=x.getImageData(0,0,48,48).data;let arr=new Uint8Array(48*48);for(let p=0,j=0;p<dat.length;p+=4,j++)arr[j]=(dat[p]*3+dat[p+1]*6+dat[p+2])/10;
+    if(prev){let diff=0;for(let j=0;j<arr.length;j++)diff+=Math.abs(arr[j]-prev[j]);diff/=arr.length;if(diff>34&&t-cuts[cuts.length-1]>.8)cuts.push(t);}
+    prev=arr;
+   }catch(e){}
+   $('analysisStatus').textContent='Đang đọc mẫu '+Math.round((i+1)/(samples+1)*100)+'%';
+  }
+  cuts.push(dur);let clean=[0];for(let i=1;i<cuts.length-1;i++){if(cuts[i]-clean[clean.length-1]>=1.1&&dur-cuts[i]>=.8)clean.push(cuts[i]);}
+  if(clean.length>12){const reduced=[0];for(let i=1;i<12;i++)reduced.push(clean[Math.round(i*(clean.length-1)/12)]);clean=reduced;}
+  clean.push(dur);sceneTimes=clean;rebuildScenes();
+  $('analysisStatus').textContent='Đã dò '+(sceneTimes.length-1)+' đoạn cảnh · thời lượng '+fmt(dur)+'. Anh kiểm tra danh sách cảnh bên dưới nhé.';
+ }catch(e){$('analysisStatus').textContent='Chưa phân tích được mẫu. App vẫn có thể dùng thời lượng video mẫu để dựng.';sceneTimes=[0,duration];rebuildScenes();}
+ finally{analyzeBtn.disabled=false;updateReady();}
+}
+analyzeBtn.addEventListener('click',analyzeTemplate);
+function rebuildScenes(){
+ const root=$('scenes');root.innerHTML='';
+ if(!files.length){$('sceneSummary').textContent='Anh chọn tư liệu nguồn trước nhé.';return;}
+ if(!sceneTimes.length)sceneTimes=[0,duration];
+ const n=sceneTimes.length-1;sceneSources=Array.from({length:n},(_,i)=>Math.min(i,files.length-1));
+ $('sceneSummary').textContent=n+' cảnh · '+fmt(duration)+' · '+files.length+' tư liệu nguồn';
+ for(let i=0;i<n;i++){
+  const box=document.createElement('div');box.className='scene';
+  const f=files[sceneSources[i]],url=mediaUrls[sceneSources[i]];
+  const thumb=document.createElement(f.type.startsWith('video/')?'video':'img');thumb.src=url;if(thumb.tagName==='VIDEO'){thumb.muted=true;thumb.playsInline=true;thumb.preload='metadata';}
+  const info=document.createElement('div');const label=document.createElement('div');label.innerHTML='<b>Cảnh '+(i+1)+'</b> <span class="hint">· '+fmt(sceneTimes[i])+' – '+fmt(sceneTimes[i+1])+'</span>';
+  const select=document.createElement('select');files.forEach((file,j)=>{const op=document.createElement('option');op.value=j;op.textContent=(file.type.startsWith('video/')?'Video ':'Ảnh ')+(j+1);select.appendChild(op);});select.value=sceneSources[i];select.addEventListener('change',()=>{sceneSources[i]=Number(select.value);const nf=files[sceneSources[i]],nu=mediaUrls[sceneSources[i]];const nt=document.createElement(nf.type.startsWith('video/')?'video':'img');nt.src=nu;if(nt.tagName==='VIDEO'){nt.muted=true;nt.playsInline=true;}box.replaceChild(nt,box.firstChild);});
+  info.append(label,select);box.append(thumb,info);root.appendChild(box);
+ }
+}
+function makeMusic(ctx,dest,dur){
+ const master=ctx.createGain();master.gain.value=.10;master.connect(dest);
+ const notes=[261.63,329.63,392,493.88,392,329.63,293.66,369.99,440,554.37,440,369.99];
+ for(let t=0,i=0;t<dur;t+=.5,i++){const osc=ctx.createOscillator(),g=ctx.createGain();osc.type='sine';osc.frequency.value=notes[i%notes.length];g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.18,t+.035);g.gain.exponentialRampToValueAtTime(.001,t+.42);osc.connect(g);g.connect(master);osc.start(t);osc.stop(t+.44);}
+}
+function drawCover(ctx,source,w,h,zoom=1){
+ const sw=source.videoWidth||source.naturalWidth||source.width,sh=source.videoHeight||source.naturalHeight||source.height;if(!sw||!sh)return;
+ const scale=Math.max(w/sw,h/sh)*zoom,cw=w/scale,ch=h/scale;ctx.drawImage(source,(sw-cw)/2,(sh-ch)/2,cw,ch,0,0,w,h);
+}
+async function build(){
+ if(!files.length)return;makeBtn.disabled=true;saveBtn.style.display='none';againBtn.style.display='none';progressEl.style.display='block';progressEl.value=0;preview.style.display='none';
+ let prepared=[];
+ try{
+  const D=templateFile&&templateVideo?duration:30,W=720,H=1280,fps=20;
+  if(!sceneTimes.length)sceneTimes=[0,D];if(sceneTimes[sceneTimes.length-1]!==D)sceneTimes=[0,D];
+  const count=sceneTimes.length-1;
+  for(let i=0;i<files.length;i++){setStatus('Đang chuẩn bị tư liệu '+(i+1)+'/'+files.length+'…',Math.round(i/files.length*8));try{prepared.push(await (files[i].type.startsWith('video/')?loadVideo(files[i]):loadImage(files[i])));}catch(e){prepared.push(null);}}
+  if(!prepared.some(Boolean))throw new Error('Không đọc được tư liệu đã chọn.');
+  const streamCanvas=document.createElement('canvas');streamCanvas.width=W;streamCanvas.height=H;const ctx=streamCanvas.getContext('2d',{alpha:false});
+  const stream=streamCanvas.captureStream(fps),AC=window.AudioContext||window.webkitAudioContext;if(!AC)throw new Error('Safari chưa hỗ trợ xử lý âm thanh.');
+  audioCtx=new AC();await audioCtx.resume();const audioDest=audioCtx.createMediaStreamDestination();makeMusic(audioCtx,audioDest,D);audioDest.stream.getAudioTracks().forEach(t=>stream.addTrack(t));
+  if(!window.MediaRecorder)throw new Error('Safari chưa hỗ trợ xuất video trực tiếp.');
+  const types=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4','video/webm;codecs=vp9,opus','video/webm'];const mime=types.find(t=>MediaRecorder.isTypeSupported(t))||'';
+  const recorder=new MediaRecorder(stream,mime?{mimeType:mime,videoBitsPerSecond:4200000}:undefined),chunks=[];recorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+  const stopped=new Promise((resolve,reject)=>{recorder.onstop=resolve;recorder.onerror=()=>reject(new Error('Lỗi khi ghi video'));});recorder.start(500);
+  const totalFrames=Math.ceil(D*fps),transition=.35,renderStart=performance.now();let currentScene=-1,currentSource=null,sourceEnd=0;
+  for(let n=0;n<totalFrames;n++){
+   const t=n/fps;let idx=sceneTimes.findIndex((v,i)=>i<sceneTimes.length-1&&t>=v&&t<sceneTimes[i+1]);if(idx<0)idx=count-1;
+   if(idx!==currentScene){currentScene=idx;let fi=sceneSources[idx]??(idx%files.length);currentSource=prepared[fi]||prepared.find(Boolean);sourceEnd=sceneTimes[idx+1]-sceneTimes[idx];if(currentSource.el.tagName==='VIDEO'){try{currentSource.el.pause();currentSource.el.currentTime=0;await currentSource.el.play();}catch(e){}}}
+   ctx.fillStyle='#120e13';ctx.fillRect(0,0,W,H);
+   const local=(t-sceneTimes[idx])/Math.max(.1,sceneTimes[idx+1]-sceneTimes[idx]);const el=currentSource.el;
+   if(el.tagName==='VIDEO'&&el.readyState>=2)drawCover(ctx,el,W,H,1.02+.035*Math.sin(local*Math.PI));else drawCover(ctx,el,W,H,1.02+.035*Math.sin(local*Math.PI));
+   const grad=ctx.createLinearGradient(0,0,0,H);grad.addColorStop(0,'rgba(15,8,15,.06)');grad.addColorStop(.72,'rgba(15,8,15,0)');grad.addColorStop(1,'rgba(15,8,15,.38)');ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+   ctx.textAlign='center';ctx.fillStyle='rgba(255,245,250,.92)';ctx.font='500 27px Georgia';ctx.fillText('NIFNAIL STUDIO',W/2,H-76);ctx.fillStyle='rgba(241,190,214,.9)';ctx.font='18px sans-serif';ctx.fillText('NAIL BEAUTY · YOUR STYLE',W/2,H-43);
+   const into=t-sceneTimes[idx];if(idx>0&&into<transition){ctx.fillStyle='rgba(18,14,19,'+(1-into/transition)+')';ctx.fillRect(0,0,W,H);}
+   if(n%20===0)setStatus('Đang dựng cảnh '+(idx+1)+'/'+count+' · '+Math.round((n+1)/totalFrames*100)+'%',8+Math.round((n+1)/totalFrames*88));
+   const delay=renderStart+(n+1)*1000/fps-performance.now();if(delay>0)await wait(delay);
+  }
+  recorder.stop();await stopped;stream.getTracks().forEach(t=>t.stop());await audioCtx.close();audioCtx=null;
+  prepared.forEach(p=>{if(p&&p.url)URL.revokeObjectURL(p.url);});
+  const type=mime.startsWith('video/mp4')?'video/mp4':'video/webm';finalBlob=new Blob(chunks,{type});if(finalUrl)URL.revokeObjectURL(finalUrl);finalUrl=URL.createObjectURL(finalBlob);preview.src=finalUrl;preview.style.display='block';preview.load();saveBtn.style.display='block';againBtn.style.display='block';
+  const ext=type==='video/mp4'?'mp4':'webm';saveBtn.textContent='Lưu / Chia sẻ video .'+ext;$('formatHint').textContent='Video xuất '+fmt(D)+' ('+ext.toUpperCase()+'). Nhạc nền là instrumental tự tạo.';
+  setStatus('Hoàn tất! Video theo thời lượng mẫu đã sẵn sàng.',100);
+ }catch(err){setStatus('Chưa dựng được: '+err.message);console.error(err);prepared.forEach(p=>{if(p&&p.url)URL.revokeObjectURL(p.url);});}
+ finally{makeBtn.disabled=!files.length;progressEl.style.display='block';}
+}
+makeBtn.addEventListener('click',build);againBtn.addEventListener('click',build);
+saveBtn.addEventListener('click',async()=>{if(!finalBlob)return;const ext=finalBlob.type.includes('mp4')?'mp4':'webm',file=new File([finalBlob],'NIFNAIL-video-'+new Date().toISOString().slice(0,10)+'.'+ext,{type:finalBlob.type});if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){try{await navigator.share({files:[file],title:'NIFNAIL STUDIO VIDEO'});return;}catch(e){if(e.name==='AbortError')return;}}const a=document.createElement('a');a.href=finalUrl;a.download=file.name;a.click();});
+if('serviceWorker'in navigator&&location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js?v=2').catch(()=>{}));
+</script>
+</body></html>
